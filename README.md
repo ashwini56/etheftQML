@@ -7,7 +7,7 @@ Quantum Machine Algorithm Used for our use case:
 - Quantum Kernel Training Algorithm (QKT)
 - Quantum Neural Network (Customized one –Called QuClassi)
 
-### 
+### Code Structure
 - etheftQML/
    - app.py                                      # Backend (http://localhost:5050/)
    - templates/                                  # Frontend        
