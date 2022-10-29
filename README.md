@@ -8,6 +8,7 @@ Quantum Machine Algorithm Used for our use case:
 - Quantum Neural Network (Customized one –Called QuClassi)
 
 ### Code Structure
+<pre>
 - etheftQML/
    - app.py                                      # Backend (http://localhost:5050/)
    - templates/                                  # Frontend        
@@ -21,4 +22,4 @@ Quantum Machine Algorithm Used for our use case:
       - QKT389.model                              # QKT
       - QuclassiModel.dat                         # QuClassi
    - data/                                        # contains time series data, dataset used to train and test the models.
-   
+   </pre>
