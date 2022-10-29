@@ -59,7 +59,7 @@ xPeru = []
 xPeruTest = [] 
 XPred = [] 
 
-qsvcRep = QSVC.load('data/qsvcDuplicateAfterSplit.model')
+qsvcRep = QSVC.load('models/qsvcDuplicateAfterSplit.model')
 testDat = np.loadtxt('data/TestData.dat')
 testInd = np.loadtxt('data/XtestIndices.dat')
 peruData = pd.read_csv("data/electricity_KNNImputer.csv")
@@ -67,14 +67,14 @@ XPeruTestDat = peruData.iloc[testInd, :]
 predDat = qsvcRep.predict(testDat[:1000])
 
 
-qsvcKT = QSVC.load('data/QKT389.model')
+qsvcKT = QSVC.load('models/QKT389.model')
 testDatKT = np.loadtxt('data/TestDataQKT389.dat')
 testIndKT = np.loadtxt('data/XtestIndicesQKT389.dat')
 DataKT = pd.read_csv("data/dataTimeSeries.csv")
 XTestDatKT = DataKT.iloc[testIndKT, :]
 predDatKT = qsvcKT.predict(testDatKT[:150])
 
-quClassiModel = np.loadtxt('data/QuclassiModel.dat', delimiter=',')
+quClassiModel = np.loadtxt('models/QuclassiModel.dat', delimiter=',')
 param0 = quClassiModel[0]
 param0 = quClassiModel[1]
 predDatQuClassi = predQuClassi(testDatKT, param0, param1)
