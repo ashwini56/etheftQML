@@ -23,3 +23,16 @@ Quantum Machine Algorithm Used for our use case:
       - QuclassiModel.dat                         # QuClassi
    - data/                                        # contains time series data, dataset used to train and test the models.
    </pre>
+
+### Requirements
+- Qiskit
+- Flask
+- numpy
+- pandas
+- Pillow
+- matplotlib
+- http-server
+
+### To run the software
+- Run the backend server by running the command python app.py in /etheftQML directory
+- To start the frontend, run http-server in ~/templates and navigate to 127.0.0.1:8000
