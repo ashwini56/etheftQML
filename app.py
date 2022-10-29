@@ -24,18 +24,7 @@ from qiskit.utils import QuantumInstance, algorithm_globals
 from qiskit_machine_learning.algorithms import QSVC
 from qiskit.algorithms.optimizers import SPSA
 
-
-import time
-
-import scipy.stats as stats
-
-import seaborn
-
-import sklearn
-from sklearn import metrics
-
 import pandas as pd
-import datetime as dt
 
 from flask import Flask, render_template
 from flask import send_file
@@ -148,8 +137,6 @@ predDatQuClassi = np.array(Ypred)
 
 ind = []
 ind.append(0)
-print(ind)
-
 
 
 @app.route('/')
