@@ -59,12 +59,14 @@ xPeru = []
 xPeruTest = [] 
 XPred = [] 
 
+N = 200 # number of datapoints to test (QSVM)
+
 qsvcRep = QSVC.load('models/qsvcDuplicateAfterSplit.model')
 testDat = np.loadtxt('data/TestData.dat')
 testInd = np.loadtxt('data/XtestIndices.dat')
 peruData = pd.read_csv("data/electricity_KNNImputer.csv")
 XPeruTestDat = peruData.iloc[testInd, :]
-predDat = qsvcRep.predict(testDat[:1000])
+predDat = qsvcRep.predict(testDat[:N])
 
 
 qsvcKT = QSVC.load('models/QKT389.model')
@@ -72,42 +74,94 @@ testDatKT = np.loadtxt('data/TestDataQKT389.dat')
 testIndKT = np.loadtxt('data/XtestIndicesQKT389.dat')
 DataKT = pd.read_csv("data/dataTimeSeries.csv")
 XTestDatKT = DataKT.iloc[testIndKT, :]
-predDatKT = qsvcKT.predict(testDatKT[:150])
+predDatKT = qsvcKT.predict(testDatKT)
 
 quClassiModel = np.loadtxt('models/QuclassiModel.dat', delimiter=',')
 param0 = quClassiModel[0]
-param0 = quClassiModel[1]
-predDatQuClassi = predQuClassi(testDatKT, param0, param1)
+param1 = quClassiModel[1]
+
+Ypred = []
+
+for i in range(len(testDatKT)):    
+	qc = QuantumCircuit(7,1)
+	qc.h(0)
+	qc.ry(param0[0],1)
+	qc.rz(param0[1],1)
+	qc.ry(param0[2],2)
+	qc.rz(param0[3],2)
+	qc.ry(param0[4],3)
+	qc.rz(param0[5],3)
+	qc.ry(testDatKT[i,0],4)
+	qc.rz(testDatKT[i,1],4)
+	qc.ry(testDatKT[i,2],5)
+	qc.rz(testDatKT[i,3],5)
+	qc.ry(testDatKT[i,4],6)
+	qc.rz(testDatKT[i,5],6)
+	qc.cswap(0,1,4)
+	qc.cswap(0,2,5)
+	qc.cswap(0,3,6)
+	qc.h(0)
+	qc.measure(0, 0)
+	backend = BasicAer.get_backend("qasm_simulator")
+	job = execute(qc, backend, shots=2^10, seed_simulator=1024, seed_transpiler=1024)
+	counts = job.result().get_counts(qc)
+	if '1' in counts:
+		p = counts['1'] / (counts['1'] + counts['0'])
+		s = 1 - (2*p)
+	else: s = 1
+	if s<=0: s = 1e-16
+	prob0 = s
+	qc1 = QuantumCircuit(7,1)
+	qc1.h(0)
+	qc1.ry(param1[0],1)
+	qc1.rz(param1[1],1)
+	qc1.ry(param1[2],2)
+	qc1.rz(param1[3],2)
+	qc1.ry(param1[4],3)
+	qc1.rz(param1[5],3)
+	qc1.ry(testDatKT[i,0],4)
+	qc1.rz(testDatKT[i,1],4)
+	qc1.ry(testDatKT[i,2],5)
+	qc1.rz(testDatKT[i,3],5)
+	qc1.ry(testDatKT[i,4],6)
+	qc1.rz(testDatKT[i,5],6)
+	qc1.cswap(0,1,4)
+	qc1.cswap(0,2,5)
+	qc1.cswap(0,3,6)
+	qc1.h(0)
+	qc1.measure(0, 0)
+	backend1 = BasicAer.get_backend("qasm_simulator")
+	job1 = execute(qc1, backend1, shots=2^10, seed_simulator=1024, seed_transpiler=1024)
+	counts1 = job1.result().get_counts(qc1)
+	if '1' in counts1:
+		p1 = counts1['1'] / (counts1['1'] + counts1['0'])
+		s1 = 1 - (2*p1)
+	else: s1 = 1    
+	if s1<=0: s1 = 1e-16
+	prob1 = s1
+	p0 = prob0 / (prob0 + prob1)
+	p1 = prob1 / (prob0 + prob1)
+	probs = np.array([p0, p1])
+	Ypred.append(np.argmax(probs))
+		
+predDatQuClassi = np.array(Ypred)
 
 ind = []
 ind.append(0)
 print(ind)
 
-def predQuClassi():
-	Ypred = []
 
-	for i in range(len(Xtest)):    
-    	qc0 = constructCircuit(param0, Xtest[i])
-    	prob0 = meas(qc0)
-	    qc1 = constructCircuit(param1, Xtest[i])
-    	prob1 = meas(qc1)
-	    p0 = prob0 / (prob0 + prob1)
-    	p1 = prob1 / (prob0 + prob1)
-	    probs = np.array([p0, p1])
-    	Ypred.append(np.argmax(probs))
-    
-    return Ypred
 
 @app.route('/')
 def home():
     return render_template('dash.html')
-
+    
+	
 @app.route("/model", methods=["GET", "POST"])
 def model():
 	m = request.form.get("model")
 	
 	print(m)
-	print(Xtest)
 	if m=='qsvm':
 		Xtest.append(testDat)
 		XtestInd.append(testInd)
@@ -137,7 +191,7 @@ def model():
 def tseries():
 
 	i = ind[-1]
-	tSeries = np.array(xPeruTest[0].iloc[i,:][100:])
+	tSeries = np.array(xPeruTest[-1].iloc[i,:][100:])
 	fig = Figure(figsize =(8, 3))
 	axis = fig.add_subplot(1,1,1)
 	axis.plot(tSeries)
@@ -154,7 +208,7 @@ def totCon():
 
 	i = request.json 
 	ind.append(i)
-	t1 = int(len(Xtest[0]))
+	t1 = int(len(Xtest[-1]))
 	return Response(str(t1), mimetype='text', status=200)
 	
 @app.route("/totPred", methods=["GET", "POST"])
@@ -162,7 +216,7 @@ def totPred():
 
 	i = request.json
 	ind.append(i)
-	Xp = XPred[0]
+	Xp = XPred[-1]
 	t = int(len(Xp[:i+1][Xp[:i+1]==1]))
 	return Response(str(t), mimetype='text', status=200)
 	
@@ -171,7 +225,7 @@ def totTrue():
 
 	i = request.json
 	ind.append(i)
-	Xp = XPred[0]
+	Xp = XPred[-1]
 	t = int(len(Xp[:i+1][Xp[:i+1]==0]))
 
 	return Response(str(t), mimetype='text', status=200)
@@ -181,7 +235,7 @@ def pred():
 
 	i = request.json
 	ind.append(i)
-	Xp = XPred[0]
+	Xp = XPred[-1]
 	p = Xp[i]
 	if p==0:
 		t = 'Legitimate'
@@ -194,8 +248,8 @@ def pred():
 def getSuspiciousTablec():
 
 	i = request.json
-	Xp = XPred[0]
-	xPT = xPeruTest[0]
+	Xp = XPred[-1]
+	xPT = xPeruTest[-1]
 	
 	if Xp[i]==1:
 		data = np.array([[xPT.iloc[i,0], np.round(xPT.iloc[i,2:].sum(skipna=True), 2), np.round(xPT.iloc[i,2:].mean(skipna=True), 2), np.round(np.random.random(1)*1000, 2)[0], np.random.randint(200000, 1000000)]])
