@@ -37,4 +37,4 @@ Quantum Machine Algorithm Used for our use case:
 - Run the backend server by running the command python app.py in /etheftQML-main directory [^1]
 - To start the frontend, run http-server in ~/templates and navigate to 127.0.0.1:8000
 
-[^1]: Time series dataset used in QSVM (/data/electricity_KNNImputer.csv) is a heavier to add on this repo. We will upload it shortly.
+[^1]: Time series dataset used in QSVM (/data/electricity_KNNImputer.csv) is a heavier to add to this repo. We will upload it shortly.
