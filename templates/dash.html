@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="styleDash.css" rel="stylesheet" type="text/css" />
+  </head>
+  <header>
+    <a href:dash.html> <h2>Dashboard</h2></a>
+        <nav>
+       <ul>
+          <li><a href="http://localhost:8080">Home</a></li>
+        </ul>
+  </header>
+
+  
+  <body>
+  
+  
+  	<script>
+  
+  		var a = null;
+  		var b = null;
+  		var c = null;
+  		var d = null;
+  		var e = null;
+  		var f = null;
+  		var g = null;
+  		
+  		getRequest = function () {
+  			if (!a) {
+  				a = new XMLHttpRequest();
+  			}
+  			return a;
+  		};
+  		
+  		getRequestB = function () {
+  			if (!b) {
+  				b = new XMLHttpRequest();
+  			}
+  			return b;
+  		};
+  		
+  		getRequestC = function () {
+  			if (!c) {
+  				c = new XMLHttpRequest();
+  			}
+  			return c;
+  		};
+  		
+  		getRequestD = function () {
+  			if (!d) {
+  				d = new XMLHttpRequest();
+  			}
+  			return d;
+  		};
+  		getRequestE = function () {
+  			if (!e) {
+  				e = new XMLHttpRequest();
+  			}
+  			return e;
+  		};
+  		
+  		getRequestF = function () {
+  			if (!f) {
+  				f = new XMLHttpRequest();
+  			}
+  			return f;
+  		};
+  		
+  		function dataCallback() {
+  			
+  			if (a.readyState == 4 && a.status == 200) {
+  				dat = document.getElementById("tot");
+  				dat.innerHTML = a.responseText;
+  			}
+  		}
+  		
+  		function dataCallbackB() {
+  			
+  			if (b.readyState == 4 && b.status == 200) {
+  				datb = document.getElementById("totPred");
+  				datb.innerHTML = b.responseText;
+  			}
+  		}
+  		
+  		function dataCallbackC() {
+  			
+  			if (c.readyState == 4 && c.status == 200) {
+  				datc = document.getElementById("pred");
+  				datc.innerHTML = c.responseText;
+  			}
+  		}
+  		
+  		function dataCallbackD() {
+  			
+  			if (d.readyState == 4 && d.status == 200) {
+  				datd = document.getElementById("totTrue");
+  				datd.innerHTML = d.responseText;
+  			}
+  		}
+  		
+  		function dataCallbackE() {
+  			
+  			if (e.readyState == 4 && e.status == 204) {
+  				date = document.getElementById("tseries");
+  				date.src = e.responseText;
+  				
+  			}
+  		}
+  		
+  		
+  		
+  		var i = 0;
+		function getTotal() {
+			
+			
+			setTimeout(function() {
+				a = getRequest();
+				a.onreadystatechange = dataCallback;
+				a.open("POST", "http://localhost:5050/tot", true);
+				a.setRequestHeader('Content-Type', 'application/json');
+				a.send(i);
+				
+				b = getRequestB();
+				b.onreadystatechange = dataCallbackB;
+				b.open("POST", "http://localhost:5050/totPred", true);
+				b.setRequestHeader('Content-Type', 'application/json');
+				b.send(i);	
+				
+				d = getRequestD();
+				d.onreadystatechange = dataCallbackD;
+				d.open("POST", "http://localhost:5050/totTrue", true);
+				d.setRequestHeader('Content-Type', 'application/json');
+				d.send(i);	
+			
+			
+				c = getRequestC();
+				c.onreadystatechange = dataCallbackC;
+				c.open("POST", "http://localhost:5050/pred", true);
+				c.setRequestHeader('Content-Type', 'application/json');
+				c.send(i);
+
+				e = getRequestE();
+				e.onreadystatechange = dataCallbackE;
+				e.open("POST", "http://localhost:5050/tseries.png", true);
+				e.setRequestHeader('Content-Type', 'application/json');
+				e.send(i);
+				
+				f = getRequestF();
+				f.onreadystatechange = function (){
+  			
+  					if (f.readyState == 4 && f.status == 200) {
+  						var objects = JSON.parse(f.responseText);
+  						ta = document.getElementById("table");
+  						if (ta != null) {
+  							
+  							var object = objects[0];
+							var tr = ta.insertRow(0);
+							
+							var td = tr.insertCell(0);
+							td.appendChild(document.createTextNode(object['cons']));
+							
+							var td1 = tr.insertCell(1);
+							td1.appendChild(document.createTextNode(object['sum']));
+							
+							var td2 = tr.insertCell(2);
+							td2.appendChild(document.createTextNode(object['mean']));
+							
+							var td3 = tr.insertCell(3);
+							td3.appendChild(document.createTextNode(object['due']));
+							
+							var td4 = tr.insertCell(4);
+							td4.appendChild(document.createTextNode(object['pin']));
+							
+  							
+  						}
+  					}
+  				};
+  				f.open("POST","http://localhost:5050/table", true)
+  				f.setRequestHeader('Content-Type', 'application/json');
+  				f.send(i);
+  				
+				var j = 0;
+				
+				setTimeout(function ts() {
+  				
+					document.getElementById("tseries").src = "http://localhost:5050/tseries.png";
+					j++;
+					if (j<1){
+						ts();
+					}
+					
+				
+				}, 500)
+								
+				i++;
+				if (i<1000){
+					getTotal();
+				}
+			},3000)			
+		}	
+  	</script>
+  	
+  	<div>
+      <h3 class="title">Welcome to EiTMoS Dashboard</h3>
+    </div>
+    
+	<div class="firstblock">
+		<div class="selection">
+			<form name="form1" id="form1" action="http://localhost:5050/model" method="POST">
+          		<div class="modellist"">
+     				<label for=" model"> Choose a QML model:
+            			<select class="button" id="model" name="model">
+              				<option value="">(select one)</option>
+              				<option value="qsvm">QSVM</option>
+              				<option value="qkt">QKT</option>
+              				<option value="quclassi">QuClassi</option>
+            			</select>
+            		</label>
+          		</div>
+          		<input type="submit" onclick="getTotal()" value="Run Model" />
+        	</form>
+        </div>
+      	<div class="prediction">
+        	<div class="number-boxes">
+				<div class="text-box">
+					<div class="text-boxtopic" >Total Consumers</div>
+           			<br><br>
+            		<div class="text-boxnumber"><div id = "tot"></div></div>
+          		</div>
+         		 <div class="text-box">
+            		<div class="text-boxtopic">Total Suspicious Consumers </div>
+            		<div class="text-boxnumber"><div id = "totPred"></div></div>
+          		</div>
+        		<div class="text-box">
+            		<div class="text-boxtopic">Total Legitimate Consumers</div>
+           			<div class="text-boxnumber"><div id = "totTrue"></div></div>
+          		</div>   
+        	</div>
+        </div>
+	</div>
+    
+    <div class="live">
+      <h2 id="livetopic">Live Analysis using Quantum Algorithms</h2>
+    </div>
+
+    <div class="overview-boxes">
+      <div class="box">
+      <img id="tseries" alt="loading..."> </img> 
+      </div>
+      <div class="box1">
+        <div class="text-boxtopic">Prediction</div>
+        <div class="text-boxnumber"><div id = "pred"></div></div>
+      </div>
+    </div>
+    
+    <div class="details">
+      <h2 id="detailstopic">Details of Suspicious Cases</h2>
+    </div>
+    <div class="table-wrapper">
+      <table id = "tab" class="fl-table">
+        <thead>
+          <tr>
+            <th>Customer Number</th>
+            <th>Total Consumption</th>
+            <th>Average Consumption</th>
+            <th>Electricty Bill Dues</th>
+            <th>PIN Code</th>
+          </tr>
+        </thead>
+        <tbody id="table">
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        <tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+    </div>
+      		    
+  </body>
+  
+  
+</html>
