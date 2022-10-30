@@ -10,18 +10,23 @@ Quantum Machine Algorithm Used for our use case:
 ### Code Structure
 <pre>
 - etheftQML/
-   - app.py                                      # Backend (http://localhost:5050/)
-   - templates/                                  # Frontend        
-      - index.html                               # Landing page
-      - dash.html                                # Dashboard
+   - app.py                                                          # Backend (http://localhost:5050/)
+   - templates/                                                      # Frontend        
+      - index.html                                                   # Landing page
+      - dash.html                                                    # Dashboard
       -  style.css    
       -  styleDash.css
 
     - models/                                    
-      -  qsvcDuplicateAfterSplit.model            # QSVM
-      - QKT389.model                              # QKT
-      - QuclassiModel.dat                         # QuClassi
-   - data/                                        # contains time series data, dataset used to train and test the models.
+      - qsvcDuplicateAfterSplit.model                                # trained QSVM-ZZ Feature Map model
+      - QKT389.model                                                 # trained QSVM-Customized QKT model
+      - QuclassiModel.dat                                            # trained QuClassi model
+      
+   - Source Code/
+      - QSVM with Standard ZZFeatureMap and Customized QKT.ipynb     # Source code to train QSVM (ZZ Feature map and Customized QKT)
+      - QuClassiModel.ipynb                                          # Source code to train QuClassi
+      
+   - data/                                                           # contains time series data, dataset used to train and test the models.
    </pre>
 
 ### Requirements
@@ -36,3 +41,6 @@ Quantum Machine Algorithm Used for our use case:
 ### To run the software
 - Run the backend server by running the command python app.py in /etheftQML-main directory
 - To start the frontend, run http-server in ~/templates and navigate to 127.0.0.1:8000
+
+### Model training 
+- To train a model from scratch, run corresponding notebook provided in ~/Source Code
