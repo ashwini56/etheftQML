@@ -39,8 +39,11 @@ Quantum Machine Algorithm Used for our use case:
 - http-server
 
 ### To run the software
+
+- Extract dataTimeSeries.csv.zip and electricity_KNNImputer.csv.zip in ~/data directory
 - Run the backend server by running the command python app.py in /etheftQML-main directory
 - To start the frontend, run http-server in ~/templates directory and navigate to 127.0.0.1:8000
 
-### Model training 
+### Model training
+- Extract dataTimeSeries.csv.zip and electricity_KNNImputer.csv.zip in ~/data directory
 - To train a model from scratch, run corresponding notebook provided in ~/Source Code
